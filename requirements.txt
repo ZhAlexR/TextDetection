@@ -1,0 +1,2 @@
+boto3==1.37.5
+pydantic-settings==2.8.1
