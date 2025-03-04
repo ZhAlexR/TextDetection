@@ -9,4 +9,4 @@ class Settings(BaseSettings):
     AWS_REGION: str = "default-aws-region"
 
 
-settngs = Settings()
+settings = Settings()
