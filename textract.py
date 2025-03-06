@@ -14,5 +14,8 @@ def crete_textract_client():
 def extract_text(image_path: str):
     textract_client = crete_textract_client()
     with open(image_path, "rb") as image:
-        response = textract_client.detect_document_text(Document={"Bytes": image.read()})
+        response = textract_client.analyze_document(
+            Document={"Bytes": image.read()},
+            FeatureTypes=["TABLES"]
+        )
     print(response)
