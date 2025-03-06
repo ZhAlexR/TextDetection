@@ -1,4 +1,5 @@
 import boto3
+from trp import Document
 
 from settings import settings
 
@@ -18,4 +19,18 @@ def extract_text(image_path: str):
             Document={"Bytes": image.read()},
             FeatureTypes=["TABLES"]
         )
-    print(response)
+    return response
+
+
+if __name__ == "__main__":
+    response = extract_text("data/nutrition-facts-label.jpg")
+
+    doc = Document(response)
+
+    # Process the tables
+    for page in doc.pages:
+        for table in page.tables:
+            print(f"Table detected with {len(table.rows)} rows and {len(table.rows[0].cells)} columns")
+            for row_idx, row in enumerate(table.rows):
+                for cell_idx, cell in enumerate(row.cells):
+                    print(f"Table[{row_idx}][{cell_idx}] = {cell.text}")
