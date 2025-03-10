@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     AWS_ACCESS_KEY: str = "default-access-key"
     AWS_SECRET_KEY: str = "default-secret-key"
     AWS_REGION: str = "default-aws-region"
+    OPENAI_API_KEY: str = "default-openai-key"
 
 
 settings = Settings()
