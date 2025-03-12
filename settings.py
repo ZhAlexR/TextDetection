@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = "default-openai-key"
     BOT_TOKEN: str = "default-bot-token"
     TELEGRAM_API_ID: str = "default-telegram-api-id"
-    TELEGRAM_API_HASH = "default-telegram-api-hash"
+    TELEGRAM_API_HASH: str = "default-telegram-api-hash"
 
 
 settings = Settings()
