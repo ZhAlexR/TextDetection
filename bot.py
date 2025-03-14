@@ -2,6 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 
 from settings import settings
+from textract import get_nutrition_table
 
 bot: Client = Client(
     name="NutriBot",
@@ -23,7 +24,17 @@ menu = ReplyKeyboardMarkup(
 )
 
 @bot.on_message(filters.command("start"))
-async def echo(client, message):
+async def start(client, message):
     await message.reply("Chose option", reply_markup=menu)
+
+
+@bot.on_message(filters.photo)
+async def handle_photo(client, message):
+    file = await client.download_media(message.photo.file_id, in_memory=True)
+    await message.reply("Extracting nutrition table ...")
+    byte_file = bytes(file.getbuffer())
+    nutrition = get_nutrition_table(byte_file)
+    await message.reply(nutrition.__str__())
+
 
 bot.run()
