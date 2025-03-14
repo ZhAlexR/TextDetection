@@ -14,13 +14,12 @@ def crete_textract_client():
         region_name=settings.AWS_REGION,
     )
 
-def extract_text(image_path: str):
+def extract_text(byte_file):
     textract_client = crete_textract_client()
-    with open(image_path, "rb") as image:
-        response = textract_client.analyze_document(
-            Document={"Bytes": image.read()},
-            FeatureTypes=["TABLES", "FORMS"]
-        )
+    response = textract_client.analyze_document(
+        Document={"Bytes": byte_file},
+        FeatureTypes=["TABLES", "FORMS"]
+    )
     return response
 
 
@@ -86,9 +85,8 @@ def crate_structured_response(input_data):
 
 
 
-
-if __name__ == "__main__":
-    response = extract_text("data/chocolate.png")
+def get_nutrition_table(path_to_photo) -> NutritionRation:
+    response = extract_text(path_to_photo)
 
     doc = Document(response)
 
@@ -99,6 +97,4 @@ if __name__ == "__main__":
                 table_line = " ".join([cell.text for cell in row.cells])
                 data += f"|| index: {index} || data: {table_line} ||\n"
 
-    print(data)
-    nutrition_score: NutritionRation = crate_structured_response(data)
-    print(nutrition_score)
+    return crate_structured_response(data)

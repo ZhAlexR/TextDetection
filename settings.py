@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     AWS_SECRET_KEY: str = "default-secret-key"
     AWS_REGION: str = "default-aws-region"
     OPENAI_API_KEY: str = "default-openai-key"
+    BOT_TOKEN: str = "default-bot-token"
+    TELEGRAM_API_ID: str = "default-telegram-api-id"
+    TELEGRAM_API_HASH: str = "default-telegram-api-hash"
 
 
 settings = Settings()
