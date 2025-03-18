@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     BOT_TOKEN: str = "default-bot-token"
     TELEGRAM_API_ID: str = "default-telegram-api-id"
     TELEGRAM_API_HASH: str = "default-telegram-api-hash"
+    MONGO_URL: str = "mongodb://localhost:27017/"
+    DATA_BASE_NAME: str = "default_db_name"
 
 
 settings = Settings()
