@@ -1,8 +1,9 @@
 import enum
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from mongo_client import bot_mongo_client
 from settings import settings
 from textract import get_nutrition_table
 
@@ -30,7 +31,7 @@ async def start(client, message):
 @bot.on_message(filters.private & filters.text)
 async def get_user_name(client, message):
     await message.reply(
-        text=f"Nice to meet you! Is {message.text} you correct name?",
+        text=f"Nice to meet you! Is <b>{message.text}</b> you correct name?",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -45,17 +46,22 @@ async def get_user_name(client, message):
                 ],
             ],
         ),
+        parse_mode=enums.ParseMode.HTML,
     )
 
 
 async def handle_user_name_confirmation(client, callback_query, action, *args):
     if action == ConfirmNameAction.CONFIRM.value:
         name = args[0]
-        await callback_query.message.edit_text(f"Great! I'll remember you as {name}")
-        print(f"User with id '{callback_query.from_user.id}' and name '{name}' is saved to database")
+        await callback_query.message.edit_text(f"Great! I'll remember you as <b>{name}</b>", parse_mode=enums.ParseMode.HTML)
+        bot_mongo_client.users.insert_one({
+            "telegram_user_id": callback_query.from_user.id,
+            "user_name": name
+        })
     elif action == ConfirmNameAction.REJECT.value:
         await callback_query.message.edit_text(
-            "No worries! Please tell me your correct name."
+            "No worries! Please tell me your correct name.",
+            parse_mode=enums.ParseMode.HTML
         )
 
 
