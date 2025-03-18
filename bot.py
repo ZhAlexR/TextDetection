@@ -27,16 +27,16 @@ async def start(client, message):
         "but first tell me your name."
     )
 
-@bot.on_message(filters.private)
+@bot.on_message(filters.private & filters.text)
 async def get_user_name(client, message):
-    confirmation_message = await message.reply(
+    await message.reply(
         text=f"Nice to meet you! Is {message.text} you correct name?",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
                         text="Yes",
-                        callback_data=f"{ActionCategory.CONFIRM_NAME.value}:{ConfirmNameAction.CONFIRM.value}"
+                        callback_data=f"{ActionCategory.CONFIRM_NAME.value}:{ConfirmNameAction.CONFIRM.value}:{message.text}"
                     ),
                     InlineKeyboardButton(
                         text="No",
@@ -47,13 +47,11 @@ async def get_user_name(client, message):
         ),
     )
 
-    confirmation_message.custom_data = {"name": message.text}
 
-async def handle_user_name_confirmation(client, callback_query, action):
-
+async def handle_user_name_confirmation(client, callback_query, action, *args):
     if action == ConfirmNameAction.CONFIRM.value:
-        name = callback_query.message.custom_data["name"]
-        callback_query.message.edit_message(f"Great! I'll remember you as {name}")
+        name = args[0]
+        await callback_query.message.edit_text(f"Great! I'll remember you as {name}")
         print(f"User with id '{callback_query.from_user.id}' and name '{name}' is saved to database")
     elif action == ConfirmNameAction.REJECT.value:
         await callback_query.message.edit_text(
@@ -72,14 +70,14 @@ async def handle_callback(client: Client, callback_query):
         return
 
     try:
-        category, action = data.split(":", 1)
+        category, action, *args = data.split(":")
     except ValueError:
         await callback_query.message.reply_text("Invalid callback!")
         return
 
     handler = ACTION_CATEGORIES_MAP.get(category)
     if handler:
-        await handler(client, callback_query, action)
+        await handler(client, callback_query, action, *args)
     else:
         await callback_query.message.reply_text("Unknown action!")
 
@@ -91,6 +89,5 @@ async def handle_photo(client, message):
     byte_file = bytes(file.getbuffer())
     nutrition = get_nutrition_table(byte_file)
     await message.reply(nutrition.__str__())
-
 
 bot.run()
